@@ -1,0 +1,189 @@
+/* ── Animations ── */
+@keyframes launcherFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+@keyframes slideUpIn {
+	from { opacity: 0; transform: translateY(24px) scale(0.98); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes slideRightIn {
+	from { opacity: 0; transform: translateX(-16px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+@keyframes viewCrossFade {
+	from { opacity: 0; transform: translateX(12px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+@keyframes heroKenBurns {
+	0% { transform: scale(1.04) translateY(0); }
+	50% { transform: scale(1.08) translateY(-6px); }
+	100% { transform: scale(1.04) translateY(0); }
+}
+@keyframes logoFloat {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-8px); }
+}
+@keyframes playGlow {
+	0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+	50% { filter: drop-shadow(0 0 14px rgba(28, 184, 83, 0.55)); }
+}
+@keyframes cardPop {
+	from { opacity: 0; transform: translateY(18px) scale(0.96); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes modalBackdropIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+@keyframes modalPanelIn {
+	from { opacity: 0; transform: scale(0.92) translateY(10px); }
+	to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes progressShine {
+	0% { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
+}
+@keyframes particleDrift {
+	0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+	10% { opacity: 0.7; }
+	90% { opacity: 0.5; }
+	100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+@keyframes sidebarGlow {
+	0%, 100% { box-shadow: inset 0 0 0 transparent; }
+	50% { box-shadow: inset 3px 0 0 #60cdff; }
+}
+@keyframes installSpin {
+	to { transform: rotate(360deg); }
+}
+
+body.launcher-ready { animation: launcherFadeIn 0.5s ease; }
+body.no-motion *, body.no-motion *::before, body.no-motion *::after {
+	animation: none !important;
+	transition: none !important;
+}
+
+.launcher-container { position: relative; z-index: 1; }
+
+.particle-layer {
+	position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+}
+.particle {
+	position: absolute; width: 8px; height: 8px; image-rendering: pixelated;
+	background: center / contain no-repeat url(creeper.jpg);
+	opacity: 0.35; animation: particleDrift linear infinite;
+}
+
+.sidebar { animation: slideRightIn 0.45s ease; }
+.menu-item { transition: background 0.15s, color 0.15s; }
+
+.sidebar-view.active { animation: viewCrossFade 0.35s ease; }
+.hero-banner {
+	overflow: hidden;
+}
+.hero-banner::before {
+	content: ""; position: absolute; inset: -8%;
+	background: inherit; background-size: cover; background-position: center;
+	animation: heroKenBurns 18s ease-in-out infinite;
+	z-index: 0;
+}
+.hero-banner > * { position: relative; z-index: 1; }
+.banner-logo { animation: logoFloat 4s ease-in-out infinite; }
+
+.version-card.selected {
+	box-shadow: 0 0 0 1px rgba(96,205,255,0.3), 0 8px 20px rgba(96,205,255,0.12);
+}
+
+.play-center mc-button { animation: playGlow 2.2s ease-in-out infinite; }
+
+/* ── Modal ── */
+.mc-modal-root {
+	display: none; position: fixed; inset: 0; z-index: 100000;
+	align-items: center; justify-content: center; padding: 24px;
+}
+.mc-modal-root.open { display: flex; }
+.mc-modal-backdrop {
+	position: absolute; inset: 0; background: rgba(0,0,0,0.72);
+	backdrop-filter: blur(4px); animation: modalBackdropIn 0.2s ease;
+}
+.mc-modal-panel {
+	position: relative; width: min(480px, 96vw);
+	background: linear-gradient(180deg, #2a2a2c 0%, #1e1e1f 100%);
+	border: 2px solid #3a3a3c; border-radius: 4px;
+	box-shadow: 0 16px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+	animation: modalPanelIn 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+	image-rendering: pixelated;
+}
+.mc-modal-panel::before {
+	content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+	background: linear-gradient(90deg, #1cb853, #60cdff, #1cb853);
+}
+.mc-modal-title {
+	padding: 20px 22px 8px; font-size: 18px; font-weight: 700; color: #fff;
+}
+.mc-modal-body {
+	padding: 8px 22px 20px; color: #ccc; font-size: 14px; line-height: 1.55;
+	white-space: pre-line;
+}
+.mc-modal-progress {
+	margin: 12px 22px 0; height: 18px; border: 2px solid #fff; padding: 2px;
+	background: transparent;
+}
+.mc-modal-progress-inner {
+	height: 100%; width: 0%; background: #fff;
+	background-image: linear-gradient(90deg, #fff 0%, #aaa 50%, #fff 100%);
+	background-size: 200% 100%;
+	animation: progressShine 1.2s linear infinite;
+	transition: width 0.15s ease;
+}
+.mc-modal-progress-label {
+	padding: 8px 22px 0; font-size: 12px; color: #888;
+}
+.mc-modal-actions {
+	display: flex; justify-content: flex-end; gap: 12px;
+	padding: 18px 22px 22px; flex-wrap: wrap;
+}
+.mc-modal-actions mc-button { cursor: pointer; }
+
+/* ── Installations manager ── */
+.settings-tabs {
+	display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid #333;
+	padding-bottom: 0;
+}
+.settings-tab {
+	padding: 10px 16px; background: transparent; border: none; color: #888;
+	font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;
+	margin-bottom: -1px; transition: color 0.15s, border-color 0.15s;
+}
+.settings-tab:hover { color: #ddd; }
+.settings-tab.active { color: #fff; border-bottom-color: #60cdff; }
+.settings-pane { display: none; }
+.settings-pane.active { display: block; animation: slideUpIn 0.3s ease; }
+#settings-save { margin-top: 8px; }
+
+.install-row {
+	display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+	background: #262627; border: 1px solid #333; border-radius: 8px;
+	margin-bottom: 10px; transition: transform 0.12s, border-color 0.12s;
+}
+.install-row:hover { border-color: #444; transform: translateX(4px); }
+.install-row.installed { border-left: 3px solid #1cb853; }
+.install-row-meta { flex: 1; min-width: 0; }
+.install-row-title { font-weight: 700; color: #fff; font-size: 14px; }
+.install-row-sub { font-size: 12px; color: #888; margin-top: 2px; }
+.install-badge {
+	font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+	text-transform: uppercase;
+}
+.install-badge.on { background: rgba(28,184,83,0.2); color: #3ddc84; }
+.install-badge.off { background: rgba(255,255,255,0.06); color: #777; }
+.install-actions { display: flex; gap: 8px; align-items: center; }
+
+.launch-toast {
+	position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+	background: #262627; border: 1px solid #444; color: #fff; padding: 12px 20px;
+	border-radius: 8px; z-index: 100001; opacity: 0; transition: transform 0.35s, opacity 0.35s;
+	pointer-events: none; font-size: 13px; font-weight: 600;
+}
+.launch-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }

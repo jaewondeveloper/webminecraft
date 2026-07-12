@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Launcher</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="launcher.css">
+    <script src="mc-button.js" defer></script>
+    <script src="launcher.js" defer></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e1e1f; }
+        ::-webkit-scrollbar-thumb { background: #3e3e42; border-radius: 10px; }
+        body {
+            background: #1a1a1a;
+            color: #eee;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 14px;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+        .launcher-container { display: flex; width: 100%; height: 100%; background: #1e1e1f; }
+        .sidebar {
+            width: 260px; background: #181819; display: flex; flex-direction: column;
+            justify-content: space-between; padding: 15px 0; border-right: 1px solid #252526; flex-shrink: 0;
+        }
+        .profile-section {
+            display: flex; align-items: center; padding: 10px 16px; margin: 0 12px 15px;
+            border-radius: 8px; cursor: default;
+        }
+        .profile-avatar {
+            width: 32px; height: 32px; border-radius: 6px;
+            margin-right: 12px; border: 1px solid rgba(255,255,255,0.1);
+            image-rendering: pixelated; object-fit: cover; background: #111;
+        }
+        .version-icon-img {
+            width: 40px; height: 40px; border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.3); flex-shrink: 0;
+            image-rendering: pixelated; object-fit: cover; background: #111;
+        }
+        .profile-info .username { font-weight: 600; font-size: 13.5px; color: #fff; }
+        .profile-info .account-type { font-size: 11px; color: #aaa; }
+        .menu-list { list-style: none; flex-grow: 1; padding: 0 12px; }
+        .menu-heading {
+            font-size: 11px; font-weight: 700; color: #757577; padding: 12px 16px 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .menu-item {
+            position: relative; display: flex; align-items: center; padding: 9px 16px; margin: 3px 0;
+            color: #ccc; text-decoration: none; cursor: pointer; font-size: 13.5px; border-radius: 6px;
+            transition: background 0.15s, color 0.15s; gap: 12px;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .menu-item.active { background: rgba(255,255,255,0.08); color: #fff; font-weight: 600; }
+        .menu-item.active::before {
+            content: ''; position: absolute; left: 0; top: 22%; height: 56%; width: 3.5px;
+            background: #60cdff; border-radius: 99px;
+        }
+        .menu-item svg { width: 18px; height: 18px; }
+        .sidebar-footer { border-top: 1px solid #252526; padding: 8px 12px 0; }
+        .version-text { font-size: 11px; color: #666; padding: 8px 16px 0; }
+        .main-content { flex: 1; background: #202021; height: 100vh; overflow: hidden; position: relative; }
+        .sidebar-view { display: none; flex-direction: column; height: 100%; width: 100%; }
+        .sidebar-view.active { display: flex; }
+        .top-header {
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
+            min-height: 60px; background: #202021; flex-shrink: 0;
+        }
+        .header-main-title { font-size: 11px; font-weight: 800; color: #8e8e90; letter-spacing: 0.5px; }
+        .header-subtitle { font-size: 14px; color: #fff; font-weight: 600; margin-top: 4px; }
+        .scrollable-body { flex: 1; overflow: auto; padding: 24px 30px; }
+        .home-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+        .home-hero-fixed { flex-shrink: 0; padding: 0 30px; }
+        .home-scroll-area { flex: 1; overflow-y: auto; padding: 20px 30px 24px; min-height: 0; }
+        .version-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+        }
+        .version-card {
+            background: #262627; border: 1px solid #333; border-radius: 10px; padding: 16px;
+            cursor: pointer;
+        }
+        .version-card.selected { border-color: #60cdff; box-shadow: 0 0 0 1px rgba(96,205,255,0.25); }
+        .version-card-top { display: flex; align-items: center; gap: 12px; }
+        .version-icon { display: none; }
+        .version-meta { flex: 1; min-width: 0; }
+        .version-name { font-weight: 700; color: #fff; font-size: 14px; }
+        .version-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+        .status-pill {
+            font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 99px;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .status-pill.online { background: rgba(35,134,54,0.2); color: #3ddc84; }
+        .status-pill.offline { background: rgba(200,60,60,0.15); color: #ff7b7b; }
+        .status-pill.checking { background: rgba(255,255,255,0.08); color: #aaa; }
+        .version-foot {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 14px; color: #888; font-size: 12px;
+        }
+        .mini-play-wrap { display: inline-flex; flex-shrink: 0; }
+        .hero-banner {
+            position: relative; width: 100%; min-height: 240px;
+            background-image: url('https://images.steamusercontent.com/ugc/2310974141604980016/B4EF3A7A2D1772DE26B1A6F51CE33A04FD8BB917/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false');
+            background-size: cover; background-position: center; border-radius: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: inset 0 -100px 100px rgba(0,0,0,0.5); margin-bottom: 24px;
+        }
+        .banner-logo { width: 260px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.7)); }
+        .gift-alert-container {
+            position: absolute; bottom: 20px; right: 24px; display: flex; align-items: center; gap: 10px;
+        }
+        .gift-banner {
+            background: #008740; color: #fff; padding: 8px 16px; border-radius: 6px;
+            font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 12px;
+        }
+        .gift-banner .close-x { cursor: pointer; opacity: 0.7; }
+        .bottom-control-bar {
+            background: #181819; border-top: 1px solid #252526; padding: 16px 30px;
+            display: flex; align-items: center; justify-content: space-between; min-height: 84px; flex-shrink: 0;
+        }
+        .version-selector {
+            display: flex; align-items: center; background: #262627; border: 1px solid #333;
+            padding: 8px 16px; border-radius: 8px; width: 260px;
+        }
+        .version-info-text .v-title { font-weight: 600; font-size: 13px; color: #fff; }
+        .version-info-text .v-number { font-size: 11px; color: #aaa; }
+        .play-center { display: flex; justify-content: center; align-items: center; }
+        .right-username-label { width: 260px; text-align: right; font-weight: 600; color: #aaa; font-size: 13px; }
+        .settings-panel { max-width: 560px; }
+        .settings-group { margin-bottom: 22px; }
+        .settings-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #ddd; }
+        .settings-group input[type="text"], .settings-group select {
+            width: 100%; background: #262627; border: 1px solid #3a3a3c; color: #fff;
+            padding: 10px 12px; border-radius: 8px; font-size: 14px;
+        }
+        .settings-check { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #ccc; }
+        .settings-check input { width: 16px; height: 16px; }
+        .btn-save { display: none; }
+        .empty-state { color: #888; padding: 40px; text-align: center; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+        .section-desc { color: #888; margin-bottom: 20px; font-size: 13px; }
+        .game-overlay {
+            display: none; position: fixed; inset: 0; z-index: 99999; background: #000;
+        }
+        .game-overlay.active { display: block; }
+        .game-overlay iframe { width: 100%; height: 100%; border: 0; }
+        .close-game-btn {
+            position: absolute; top: 12px; right: 12px; z-index: 2;
+            background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="particle-layer" class="particle-layer"></div>
+    <div class="launcher-container">
+        <div class="sidebar">
+            <div>
+                <div class="profile-section">
+                    <img class="profile-avatar" src="creeper.jpg" alt="프로필">
+                    <div class="profile-info">
+                        <div class="username">Gigabit1019855</div>
+                        <div class="account-type">Minecraft</div>
+                    </div>
+                </div>
+                <ul class="menu-list">
+                    <li><a href="#" class="menu-item active" data-sidebar="home">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        홈
+                    </a></li>
+                    <div class="menu-heading">에디션</div>
+                    <li><a href="#" class="menu-item" data-sidebar="web">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        Web Edition
+                    </a></li>
+                    <li><a href="#" class="menu-item" data-sidebar="mod">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2z"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                        Mod Edition
+                    </a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="#" class="menu-item" data-sidebar="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    설정
+                </a>
+                <div class="version-text">Minecraft Launcher</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="view-home" class="sidebar-view active">
+                <div class="top-header">
+                    <div>
+                        <div class="header-main-title">MINECRAFT</div>
+                        <div class="header-subtitle">플레이</div>
+                    </div>
+                </div>
+                <div class="home-body">
+                    <div class="home-hero-fixed">
+                        <div class="hero-banner">
+                            <img class="banner-logo" src="https://1000logos.net/wp-content/uploads/2018/10/Minecraft-Logo-2013.png" alt="Minecraft">
+                            <div class="gift-alert-container">
+                                <div class="gift-banner">
+                                    <span>친구와 함께 플레이하세요!</span>
+                                    <span class="close-x">✕</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="home-scroll-area">
+                        <div class="section-title">설치된 버전</div>
+                        <div class="section-desc">버전을 선택한 뒤 플레이를 누르세요.</div>
+                        <div id="home-version-grid" class="version-grid"></div>
+                    </div>
+                </div>
+                <div class="bottom-control-bar">
+                    <div class="version-selector">
+                        <img class="version-icon-img" src="creeper.jpg" alt="">
+                        <div class="version-info-text">
+                            <span class="v-title" id="selected-version-title">Minecraft 1.12.2</span>
+                            <span class="v-number" id="selected-version-number">Latest release · WASM</span>
+                        </div>
+                    </div>
+                    <div class="play-center">
+                        <mc-button id="main-play-button" bg-top="#1cb853" bg-bottom="#0f8b3e" text-color="#ffffff" width="220px" height="46px">플레이</mc-button>
+                    </div>
+                    <div class="right-username-label" id="right-username-label">Gigabit1019855</div>
+                </div>
+            </div>
+
+            <div id="view-web" class="sidebar-view">
+                <div class="top-header">
+                    <div>
+                        <div class="header-main-title">WEB EDITION</div>
+                        <div class="header-subtitle">브라우저 웹 클라이언트</div>
+                    </div>
+                </div>
+                <div class="scrollable-body">
+                    <div class="section-title">Web Edition</div>
+                    <div class="section-desc">1.12.2 WASM(8080) · 1.12.2 JS(8084) · 스냅샷 · 베타</div>
+                    <div id="web-version-grid" class="version-grid"></div>
+                </div>
+            </div>
+
+            <div id="view-mod" class="sidebar-view">
+                <div class="top-header">
+                    <div>
+                        <div class="header-main-title">MOD EDITION</div>
+                        <div class="header-subtitle">EaglyMC 모드 클라이언트</div>
+                    </div>
+                </div>
+                <div class="scrollable-body">
+                    <div class="section-title">Mod Edition</div>
+                    <div class="section-desc">1.8.8 EaglyMC(8081~8083) · Astra 1.19.2(8085)</div>
+                    <div id="mod-version-grid" class="version-grid"></div>
+                </div>
+            </div>
+
+            <div id="view-settings" class="sidebar-view">
+                <div class="top-header">
+                    <div>
+                        <div class="header-main-title">SETTINGS</div>
+                        <div class="header-subtitle">런처 설정</div>
+                    </div>
+                </div>
+                <div class="scrollable-body settings-panel">
+                    <div class="settings-tabs">
+                        <button type="button" class="settings-tab active" data-pane="general">일반</button>
+                        <button type="button" class="settings-tab" data-pane="installations">버전 설치</button>
+                    </div>
+
+                    <div id="pane-general" class="settings-pane active">
+                        <div class="settings-group">
+                            <label for="setting-username">플레이어 이름</label>
+                            <input type="text" id="setting-username" placeholder="닉네임">
+                        </div>
+                        <div class="settings-group">
+                            <label for="setting-default-version">기본 실행 버전</label>
+                            <select id="setting-default-version"></select>
+                        </div>
+                        <div class="settings-check">
+                            <input type="checkbox" id="setting-fullscreen" checked>
+                            <label for="setting-fullscreen">실행 시 전체 화면</label>
+                        </div>
+                        <div class="settings-check">
+                            <input type="checkbox" id="setting-gift-banner" checked>
+                            <label for="setting-gift-banner">홈 배너 알림 표시</label>
+                        </div>
+                        <div class="settings-check">
+                            <input type="checkbox" id="setting-reduce-motion">
+                            <label for="setting-reduce-motion">애니메이션 줄이기</label>
+                        </div>
+                        <mc-button id="settings-save" bg-top="#1cb853" bg-bottom="#0f8b3e" text-color="#ffffff" width="140px" height="44px">저장</mc-button>
+                    </div>
+
+                    <div id="pane-installations" class="settings-pane">
+                        <div class="section-title">버전 설치 관리</div>
+                        <div class="section-desc">설치하거나 삭제할 버전을 선택하세요. 실제 마인크래프트 런처처럼 버전을 관리할 수 있습니다.</div>
+                        <div id="install-manager-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-overlay" class="game-overlay">
+        <button id="close-game" class="close-game-btn" title="닫기">✕</button>
+        <iframe id="game-frame" title="Minecraft" tabindex="0"></iframe>
+    </div>
+
+    <div id="mc-modal" class="mc-modal-root" role="dialog" aria-modal="true">
+        <div id="mc-modal-backdrop" class="mc-modal-backdrop"></div>
+        <div class="mc-modal-panel">
+            <div id="mc-modal-title" class="mc-modal-title">Minecraft Launcher</div>
+            <div id="mc-modal-body" class="mc-modal-body"></div>
+            <div id="mc-modal-progress-wrap" class="mc-modal-progress" style="display:none">
+                <div id="mc-modal-progress-inner" class="mc-modal-progress-inner"></div>
+            </div>
+            <div id="mc-modal-progress-label" class="mc-modal-progress-label" style="display:none"></div>
+            <div id="mc-modal-actions" class="mc-modal-actions"></div>
+        </div>
+    </div>
+
+    <div id="launch-toast" class="launch-toast"></div>
+</body>
+</html>

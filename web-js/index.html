@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="und" style="width:100%;height:100%;background-color:black;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Minecraft By Jaewon">
+    <title>Minecraft</title>
+    <link type="image/png" rel="shortcut icon" href="favicon.png?v=22" />
+    <script type="text/javascript">window.__eaglerOverlayMode="timer";window.__eaglerOverlayMinMs=12000;window.__eaglerShowLoadingStatus=true;window.__eaglerClassesJSURL="classes.js?v=22";</script>
+    <script type="text/javascript" src="jaewon-boot.js?v=23"></script>
+    <script type="text/javascript">
+        "use strict";
+        var relayId = Math.floor(Math.random() * 3);
+        window.eaglercraftXOpts = {
+            container: "game_frame",
+            worldsDB: "worlds",
+            assetsURI: "assets.epk",
+            showBootMenuOnLaunch: false,
+            allowBootMenu: false,
+            bootMenuBlocksUnsignedClients: false,
+            checkRelaysForUpdates: true,
+            allowServerRedirects: true,
+            relays: [
+                { addr: "wss://relay.deev.is/", comment: "relay #1", primary: relayId === 0 },
+                { addr: "wss://relay.lax1dude.net/", comment: "relay #2", primary: relayId === 1 },
+                { addr: "wss://relay.shhnowisnottheti.me/", comment: "relay #3", primary: relayId === 2 }
+            ]
+        };
+        (function() {
+            var q = window.location.search;
+            if ((typeof q === "string") && q[0] === "?" && (typeof URLSearchParams !== "undefined")) {
+                var s = new URLSearchParams(q).get("server");
+                if (s) window.eaglercraftXOpts.joinServer = s;
+            }
+        })();
+    </script>
+    <script type="text/javascript">
+        "use strict";
+        (function(){
+            function __eaglerLaunchGame() {
+                window.removeEventListener("keydown", __eaglerLaunchGame);
+                window.removeEventListener("mousedown", __eaglerLaunchGame);
+                window.removeEventListener("touchstart", __eaglerLaunchGame);
+                var boot = document.getElementById("launch_countdown_screen");
+                if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+                document.body.style.backgroundColor = "black";
+                if (typeof window.__eaglerShowLoadingSplashAfterMain === "function") {
+                    window.__eaglerShowLoadingSplashAfterMain();
+                }
+                if (typeof window.__eaglerInstallNetworkStatusHooks === "function") {
+                    window.__eaglerInstallNetworkStatusHooks();
+                }
+                if (typeof window.__eaglerSetLoadingStatus === "function") {
+                    window.__eaglerSetLoadingStatus("?? ?? ?? ?...");
+                }
+                function __eaglerStartMain() {
+                    if (typeof main !== "function") {
+                        alert("?? ?? ??: main() ??");
+                        return;
+                    }
+                    if (typeof window.__eaglerSetLoadingStatus === "function") {
+                        window.__eaglerSetLoadingStatus("?? ?? ??? ?...");
+                    }
+                    main();
+                    if (typeof window.__eaglerStartLoadingOverlayWatch === "function") {
+                        window.__eaglerStartLoadingOverlayWatch();
+                    }
+                }
+                if (typeof main === "function") {
+                    __eaglerStartMain();
+                } else if (typeof window.__eaglerEnsureClassesLoaded === "function") {
+                    window.__eaglerEnsureClassesLoaded(__eaglerStartMain);
+                } else {
+                    alert("?? ?? ??: classes.js ??");
+                }
+            }
+            window.addEventListener("load", function() {
+                window.addEventListener("keydown", __eaglerLaunchGame);
+                window.addEventListener("mousedown", __eaglerLaunchGame);
+                window.addEventListener("touchstart", __eaglerLaunchGame);
+            });
+        })();
+    </script>
+</head>
+<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
+    <div style="margin:0px;width:100%;height:100%;image-rendering:pixelated;background:center / contain no-repeat url(splash.png?v=22), 0px 0px / 1000000% 1000000% no-repeat url(splash.png?v=22) black;user-select:none;" id="launch_countdown_screen">
+    </div>
+</body>
+</html>

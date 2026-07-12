@@ -1,0 +1,10 @@
+source/
+*.log
+*.bak
+*.bak2
+*.upstream
+*.teadbg
+web/index.html.upstream
+minecraft-astra/resourcepacks/Astra.zip
+.DS_Store
+Thumbs.db

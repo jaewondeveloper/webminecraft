@@ -1,0 +1,92 @@
+{
+	"texture_size": [64, 64],
+	"textures": {
+		"0": "minecraft:optifine/cit/icons/new_default_plus_dungeons/icons_shield/stone_wood_shield",
+		"particle": "minecraft:optifine/cit/icons/new_default_plus_dungeons/icons_shield/stone_wood_shield"
+	},
+	"elements": [
+		{
+			"from": [7.5, -2, 2],
+			"to": [8.5, 20, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [14, 14, 16]},
+			"faces": {
+				"north": {"uv": [3, 3, 3.25, 8.5], "texture": "#0"},
+				"east": {"uv": [0, 3, 3, 8.5], "texture": "#0"},
+				"south": {"uv": [6.25, 3, 6.5, 8.5], "texture": "#0"},
+				"west": {"uv": [3.25, 3, 6.25, 8.5], "texture": "#0"},
+				"up": {"uv": [3.25, 3, 3, 0], "texture": "#0"},
+				"down": {"uv": [3.5, 0, 3.25, 3], "texture": "#0"}
+			}
+		},
+		{
+			"from": [8.5, 6, 7],
+			"to": [14.5, 12, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [15, 16, 16]},
+			"faces": {
+				"north": {"uv": [7, 0.5, 8.5, 2], "texture": "#0"},
+				"east": {"uv": [6.5, 0.5, 7, 2], "texture": "#0"},
+				"south": {"uv": [9, 0.5, 10.5, 2], "texture": "#0"},
+				"west": {"uv": [8.5, 0.5, 9, 2], "texture": "#0"},
+				"up": {"uv": [8.5, 0.5, 7, 0], "texture": "#0"},
+				"down": {"uv": [10, 0, 8.5, 0.5], "texture": "#0"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [-180, 0, -180],
+			"translation": [3.5, -3, 4]
+		},
+		"thirdperson_lefthand": {
+			"translation": [3.5, -3, 4]
+		},
+		"firstperson_righthand": {
+			"rotation": [5, -90, 0],
+			"translation": [-4, -5.5, -2.75]
+		},
+		"firstperson_lefthand": {
+			"rotation": [5, 90, 0],
+			"translation": [-4, -5.5, -2.75]
+		},
+		"ground": {
+			"translation": [1.75, 1.75, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [13, 65, -7],
+			"translation": [0, -0.6, 0],
+			"scale": [0.675, 0.675, 0.675]
+		},
+		"head": {
+			"rotation": [0, 90, 0],
+			"translation": [-9.75, -11, -6.75]
+		},
+		"fixed": {
+			"rotation": [0, -90, 0],
+			"translation": [1.75, -0.75, -2.25],
+			"scale": [0.6, 0.6, 0.6]
+		}
+	},
+	"groups": [
+		{
+			"name": "stone_wood_shield",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [
+				{
+					"name": "body",
+					"origin": [9, 15, 16],
+					"color": 0,
+					"children": [0]
+				},
+				{
+					"name": "handle",
+					"origin": [8, 8, 8],
+					"color": 0,
+					"children": [1]
+				}
+			]
+		}
+	]
+}

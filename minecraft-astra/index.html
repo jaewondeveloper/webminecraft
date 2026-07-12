@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html style="width:100%;height:100%;background-color:black;">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+	<meta name="google" content="notranslate" />
+	<title>Minecraft</title>
+	<link type="image/png" rel="shortcut icon" href="favicon.png?v=22" />
+	<script type="text/javascript">window.__eaglerOverlayMode="timer";window.__eaglerOverlayMinMs=12000;</script>
+	<script type="text/javascript" src="jaewon-boot.js?v=23"></script>
+	<script type="text/javascript" src="astra-boot.js?v=22"></script>
+	<script type="text/javascript" src="classes.js?v=22"></script>
+	<script type="text/javascript">
+		"use strict";
+		window.addEventListener("load", function() {
+			if (window.location.href.indexOf("file:") === 0) {
+				alert("HTTP로 접속하세요.");
+				return;
+			}
+
+			var bootSplash = document.createElement("div");
+			bootSplash.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;image-rendering:pixelated;background:center / contain no-repeat url(splash.png?v=22), 0px 0px / 1000000% 1000000% no-repeat url(splash.png?v=22) black";
+			document.body.appendChild(bootSplash);
+
+			function startGame() {
+				window.removeEventListener("keydown", startGame);
+				window.removeEventListener("mousedown", startGame);
+				window.removeEventListener("touchstart", startGame);
+				if (bootSplash.parentNode) document.body.removeChild(bootSplash);
+
+				var relayId = Math.floor(Math.random() * 3);
+				window.eaglercraftXOpts = {
+					demoMode: false,
+					container: "game_frame",
+					assetsURI: "assets.epk",
+					worldsDB: "worlds_astra",
+					resourcePacksDB: "resourcePacks_astra",
+					localStorageNamespace: "_eaglercraftX_astra",
+					lang: "ko_kr",
+					localesURI: "lang/",
+					showBootMenuOnLaunch: false,
+					allowBootMenu: false,
+					bootMenuBlocksUnsignedClients: false,
+					enableSignatureBadge: false,
+					enableDownloadOfflineButton: false,
+					allowUpdateSvc: false,
+					allowUpdateDL: false,
+					enableMinceraft: false,
+					forceProfanityFilter: false,
+					html5CursorSupport: true,
+					openDebugConsoleOnLaunch: false,
+					logInvalidCerts: false,
+					crashOnUncaughtExceptions: true,
+					checkRelaysForUpdates: false,
+					allowServerRedirects: true,
+					relays: [
+						{ addr: "wss://relay.deev.is/", comment: "relay #1", primary: relayId === 0 },
+						{ addr: "wss://relay.lax1dude.net/", comment: "relay #2", primary: relayId === 1 },
+						{ addr: "wss://relay.shhnowisnottheti.me/", comment: "relay #3", primary: relayId === 2 }
+					]
+				};
+
+				if (typeof main !== "function") {
+					alert("게임 로딩 실패");
+					return;
+				}
+
+				if (typeof window.__eaglerShowLoadingSplashAfterMain === "function") {
+					window.__eaglerShowLoadingSplashAfterMain();
+				}
+				if (typeof window.__eaglerInstallNetworkStatusHooks === "function") {
+					window.__eaglerInstallNetworkStatusHooks();
+				}
+				if (typeof window.__eaglerSetLoadingStatus === "function") {
+					window.__eaglerSetLoadingStatus("Astra Edition 준비 중...");
+				}
+				main();
+				if (typeof window.__eaglerStartLoadingOverlayWatch === "function") {
+					window.__eaglerStartLoadingOverlayWatch();
+				}
+			}
+
+			window.addEventListener("keydown", startGame);
+			window.addEventListener("mousedown", startGame);
+			window.addEventListener("touchstart", startGame);
+		});
+	</script>
+</head>
+<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame"></body>
+</html>
