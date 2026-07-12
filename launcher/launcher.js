@@ -152,6 +152,12 @@
 		return host === "localhost" || host === "127.0.0.1";
 	}
 
+	function usePathBasedGames() {
+		if (!isLocalDev()) return true;
+		var port = window.location.port;
+		return port === "8090" || port === "" || port === "80" || port === "443";
+	}
+
 	function siteBasePath() {
 		var path = window.location.pathname || "/";
 		if (/\/index\.html$/i.test(path)) path = path.replace(/\/index\.html$/i, "");
@@ -161,6 +167,9 @@
 
 	function gameUrl(version) {
 		var folder = version.folder || "web";
+		if (usePathBasedGames()) {
+			return window.location.origin + siteBasePath() + "/" + folder + "/";
+		}
 		if (isLocalDev() && version.port) {
 			return "http://localhost:" + version.port + "/";
 		}
@@ -537,27 +546,32 @@
 		var frame = $("#game-frame");
 		if (!overlay || !frame) return;
 
+		function focusGameFrame() {
+			if (typeof window.focusGameFrame === "function") {
+				window.focusGameFrame();
+				return;
+			}
+			try {
+				frame.focus();
+				if (frame.contentWindow) frame.contentWindow.focus();
+			} catch (e) {}
+		}
+
 		function doLaunch() {
 			frame.onload = function() {
 				setTimeout(focusGameFrame, 80);
 				setTimeout(focusGameFrame, 400);
+				setTimeout(focusGameFrame, 1200);
 			};
 			frame.src = gameUrl(v);
 			overlay.classList.add("active");
-			showToast("Minecraft " + v.version + " 실행 중...");
+			showToast("게임 화면을 클릭한 뒤 아무 키나 누르세요");
 			setTimeout(focusGameFrame, 120);
 			if (state.settings.fullscreenLaunch) {
 				try {
 					if (overlay.requestFullscreen) overlay.requestFullscreen();
 				} catch (e) {}
 			}
-		}
-
-		function focusGameFrame() {
-			try {
-				frame.focus();
-				if (frame.contentWindow) frame.contentWindow.focus();
-			} catch (e) {}
 		}
 
 		if (state.status[v.id]) {
@@ -658,12 +672,18 @@
 		var frame = $("#game-frame");
 		var overlay = $("#game-overlay");
 		if (!frame || !overlay) return;
-		overlay.addEventListener("click", function() {
+		overlay.addEventListener("click", function(e) {
+			focusGameFrame();
+			if (e.target === overlay) showToast("게임 화면을 클릭한 뒤 키를 누르세요");
+		});
+		frame.addEventListener("click", focusGameFrame);
+		function focusGameFrame() {
 			try {
 				frame.focus();
 				if (frame.contentWindow) frame.contentWindow.focus();
 			} catch (e) {}
-		});
+		}
+		window.focusGameFrame = focusGameFrame;
 	}
 
 	function bindPlayButtons() {

@@ -1,5 +1,5 @@
 "use strict";
-window.__eaglerSplash2URL = window.__eaglerSplash2URL || "splash2.png?v=23";
+window.__eaglerSplash2URL = window.__eaglerSplash2URL || "splash2.png?v=24";
 window.__eaglerClassesJSURL = window.__eaglerClassesJSURL || null;
 
 var __eaglerEarlySplashSelectors = [
@@ -182,7 +182,7 @@ window.__eaglerShowLoadingSplash = function(wrapper) {
 	var host = __eaglerEnsureOverlayHost();
 	if (!host) return;
 
-	var img = window.__eaglerSplash2URL || "splash2.png?v=23";
+	var img = window.__eaglerSplash2URL || "splash2.png?v=24";
 	var minMs = (typeof window.__eaglerOverlayMinMs === "number") ? window.__eaglerOverlayMinMs : 12000;
 	var useTimerOnly = window.__eaglerOverlayMode === "timer";
 	var showStatus = window.__eaglerShowLoadingStatus !== false;
@@ -331,6 +331,9 @@ window.__eaglerShowLoadingSplash = function(wrapper) {
 				window.__eaglerOverlayState = null;
 			}
 			__eaglerRestoreOverlayHidden();
+			if (typeof window.__eaglerEnsurePressKeyInteractive === "function") {
+				window.__eaglerEnsurePressKeyInteractive();
+			}
 		}, 120);
 	}
 
@@ -412,11 +415,28 @@ window.__eaglerStartLoadingOverlayWatch = function() {
 	setTimeout(function() { clearInterval(waitWrapper); }, 120000);
 };
 
-// 8084: 페이지 셸 로드 완료 표시
-window.addEventListener("load", function() {
-	if (window.__eaglerClassesJSURL && typeof main !== "function") {
-		if (typeof window.__eaglerSetLoadingStatus === "function") {
-			window.__eaglerSetLoadingStatus("준비 완료 — 아무 키나 누르세요");
+// Ensure game press-any-key screens stay interactive after loading overlay
+window.__eaglerEnsurePressKeyInteractive = function() {
+	var selectors = [
+		"._eaglercraftX_press_any_key_image",
+		"._eaglercraftX_mobile_press_any_key"
+	];
+	for (var i = 0; i < selectors.length; i++) {
+		var nodes = document.querySelectorAll(selectors[i]);
+		for (var j = 0; j < nodes.length; j++) {
+			nodes[j].removeAttribute("data-eagler-overlay-hidden");
+			nodes[j].style.removeProperty("display");
+			nodes[j].style.removeProperty("visibility");
+			nodes[j].style.pointerEvents = "auto";
 		}
 	}
+};
+
+window.addEventListener("load", function() {
+	setInterval(function() {
+		if (window.__eaglerOverlayState && !window.__eaglerOverlayState.dismissed()) return;
+		if (document.querySelector("._eaglercraftX_press_any_key_image, ._eaglercraftX_mobile_press_any_key")) {
+			window.__eaglerEnsurePressKeyInteractive();
+		}
+	}, 500);
 });
