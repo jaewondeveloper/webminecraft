@@ -20,9 +20,9 @@
 	var CATALOG = [
 		{ id: "wasm-1122", name: "Minecraft", subtitle: "Latest release · WASM", edition: "web", folder: "web", port: 8080, version: "1.12.2", engine: "WASM", latest: true, size: "142 MB" },
 		{ id: "js-1122", name: "Minecraft", subtitle: "Latest release · JavaScript", edition: "web", folder: "web-js", port: 8084, version: "1.12.2", engine: "JavaScript", size: "198 MB" },
-		{ id: "mod-eagly-js", name: "Minecraft", subtitle: "EaglyMC · Modded 1.8.8", edition: "mod", folder: "eaglymc", port: 8081, version: "1.8.8", engine: "Mod JS", size: "156 MB" },
-		{ id: "mod-eagly-wasm", name: "Minecraft", subtitle: "EaglyMC · Modded WASM", edition: "mod", folder: "eaglymc-wasm", port: 8082, version: "1.8.8", engine: "Mod WASM", size: "161 MB" },
-		{ id: "mod-chrome", name: "Minecraft", subtitle: "EaglyMC · 저사양 1.8.8", edition: "mod", folder: "eaglymc-chromebook", port: 8083, version: "1.8.8", engine: "Chromebook", size: "148 MB" },
+		{ id: "mod-eagly-js", name: "Minecraft", subtitle: "EaglyMC · Modded JavaScript", edition: "mod", folder: "eaglymc", port: 8081, version: "1.20", engine: "Mod JS", size: "156 MB" },
+		{ id: "mod-eagly-wasm", name: "Minecraft", subtitle: "EaglyMC · Modded WASM", edition: "mod", folder: "eaglymc-wasm", port: 8082, version: "1.20", engine: "Mod WASM", size: "161 MB" },
+		{ id: "mod-chrome", name: "Minecraft", subtitle: "EaglyMC · 저사양", edition: "mod", folder: "eaglymc-chromebook", port: 8083, version: "1.20", engine: "Chromebook", size: "148 MB" },
 		{ id: "astra-1192", name: "Minecraft", subtitle: "Astra Edition · 리소스팩", edition: "mod", folder: "minecraft-astra", port: 8085, version: "1.19.2", engine: "Astra", size: "214 MB" },
 		{ id: "snap-1122", name: "Minecraft", subtitle: "Snapshot · 17w50a", edition: "web", folder: "web-js", port: 8084, version: "1.12.2", engine: "Snapshot", snapshot: true, size: "201 MB" },
 		{ id: "beta-188", name: "Minecraft", subtitle: "Beta · 1.8.8", edition: "web", folder: "eaglymc", port: 8081, version: "1.8.8", engine: "Beta", size: "138 MB" },

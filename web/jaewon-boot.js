@@ -1,9 +1,11 @@
 "use strict";
-window.__eaglerSplash2URL = window.__eaglerSplash2URL || "splash2.png?v=24";
+window.__eaglerSplash2URL = window.__eaglerSplash2URL || "splash2.png?v=25";
 window.__eaglerClassesJSURL = window.__eaglerClassesJSURL || null;
 
 var __eaglerEarlySplashSelectors = [
-	"._eaglercraftX_early_splash_element"
+	"._eaglercraftX_early_splash_element",
+	"._eaglercraftX_press_any_key_image",
+	"._eaglercraftX_mobile_press_any_key"
 ];
 
 function __eaglerHideNodes(selectors) {
@@ -32,7 +34,14 @@ function __eaglerHideBootScreens() {
 		boot.style.setProperty("display", "none", "important");
 		boot.style.setProperty("visibility", "hidden", "important");
 	}
+	$all("[data-jaewon-initial-splash]").forEach(function(el) {
+		el.style.setProperty("display", "none", "important");
+	});
 	__eaglerHideNodes(__eaglerEarlySplashSelectors);
+}
+
+function $all(sel) {
+	return document.querySelectorAll(sel);
 }
 
 function __eaglerEnsureOverlayHost() {
@@ -182,9 +191,8 @@ window.__eaglerShowLoadingSplash = function(wrapper) {
 	var host = __eaglerEnsureOverlayHost();
 	if (!host) return;
 
-	var img = window.__eaglerSplash2URL || "splash2.png?v=24";
-	var minMs = (typeof window.__eaglerOverlayMinMs === "number") ? window.__eaglerOverlayMinMs : 12000;
-	var useTimerOnly = window.__eaglerOverlayMode === "timer";
+	var img = window.__eaglerSplash2URL || "splash2.png?v=25";
+	var minMs = (typeof window.__eaglerOverlayMinMs === "number") ? window.__eaglerOverlayMinMs : 8000;
 	var showStatus = window.__eaglerShowLoadingStatus !== false;
 	var state = window.__eaglerOverlayState;
 	var overlay, inner, statusEl, start, dismissed, mojangSeen, titleStable, glErrors;
@@ -337,18 +345,48 @@ window.__eaglerShowLoadingSplash = function(wrapper) {
 		}, 120);
 	}
 
+	function canDismissFromSample(sample, elapsed) {
+		if (!sample) return false;
+		if (sample.isMojang || (sample.whiteCorners >= 2 && sample.centerRed)) {
+			mojangSeen = true;
+			state.mojangSeen = true;
+		}
+		if (mojangSeen && sample.isTitle) {
+			titleStable++;
+			state.titleStable = titleStable;
+			if (titleStable >= 4) return true;
+		} else if (sample.isTitle) {
+			titleStable++;
+			state.titleStable = titleStable;
+			if (titleStable >= 6) return true;
+		} else if (mojangSeen && !sample.isMojang && sample.cornerAvg < 170) {
+			titleStable++;
+			state.titleStable = titleStable;
+			if (titleStable >= 4) return true;
+		} else if (elapsed >= minMs + 4000 && sample.cornerAvg < 140 && sample.whiteCorners <= 2) {
+			titleStable++;
+			state.titleStable = titleStable;
+			if (titleStable >= 8) return true;
+		} else {
+			titleStable = 0;
+			state.titleStable = 0;
+		}
+		return false;
+	}
+
 	function poll() {
 		if (dismissed) return;
 		var elapsed = performance.now() - start;
 		if (!state.manualProgress) {
-			var barTarget = Math.min(0.92, elapsed / Math.max(minMs, 8000));
+			var barTarget = Math.min(0.96, elapsed / Math.max(minMs + 12000, 20000));
 			inner.style.width = (barTarget * 100) + "%";
 		}
 		if (!state.wrapper) {
-			state.wrapper = document.querySelector("._eaglercraftX_wrapper_element");
+			state.wrapper = document.querySelector("._eaglercraftX_wrapper_element") || document.getElementById("game_frame") || document.body;
 		}
 		if (overlay.parentNode !== host) host.appendChild(overlay);
 		__eaglerHideGameBootDuringOverlay();
+		__eaglerHideBootScreens();
 
 		if (showStatus && statusEl) {
 			var stale = performance.now() - (window.__eaglerLastStatusAt || 0);
@@ -361,34 +399,15 @@ window.__eaglerShowLoadingSplash = function(wrapper) {
 			statusEl.textContent = sec > 0 ? (base + " (" + sec + "초)") : base;
 		}
 
-		if (useTimerOnly) {
-			if (elapsed >= minMs) {
+		if (elapsed >= minMs) {
+			var sample = sampleGameScreen();
+			if (canDismissFromSample(sample, elapsed)) {
 				dismissOverlay();
 				return;
 			}
-		} else if (elapsed >= 8000) {
-			var sample = sampleGameScreen();
-			if (sample) {
-				if (sample.isMojang || (sample.whiteCorners >= 2 && sample.centerRed)) {
-					mojangSeen = true;
-					state.mojangSeen = true;
-				}
-				if (mojangSeen && sample.isTitle) {
-					titleStable++;
-					state.titleStable = titleStable;
-					if (titleStable >= 4) { dismissOverlay(); return; }
-				} else if (mojangSeen && !sample.isMojang && sample.cornerAvg < 170) {
-					titleStable++;
-					state.titleStable = titleStable;
-					if (titleStable >= 3) { dismissOverlay(); return; }
-				} else {
-					titleStable = 0;
-					state.titleStable = 0;
-				}
-			}
 		}
-		if (elapsed > 120000) { dismissOverlay(); return; }
-		setTimeout(poll, useTimerOnly ? 200 : 250);
+		if (elapsed > 180000) { dismissOverlay(); return; }
+		setTimeout(poll, 200);
 	}
 	poll();
 };

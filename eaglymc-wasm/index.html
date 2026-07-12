@@ -7,6 +7,12 @@
 	<title>Minecraft By Jaewon</title>
 	<link type="image/png" rel="shortcut icon" href="favicon.png?v=14" />
 	<script type="text/javascript">
+		window.__eaglerSplash2URL = "splash2.png?v=25";
+		window.__eaglerOverlayMinMs = 6000;
+		window.__eaglerShowLoadingStatus = true;
+	</script>
+	<script type="text/javascript" src="jaewon-boot.js?v=25"></script>
+	<script type="text/javascript">
 		"use strict";
 		window.addEventListener("load", async function() {
 			if (window.location.href.indexOf("file:") === 0) {
@@ -18,110 +24,12 @@
 				return;
 			}
 
-			const splash = document.createElement("div");
-			splash.style.width = "100%";
-			splash.style.height = "100%";
-			splash.style.imageRendering = "pixelated";
-			splash.style.background = "center / contain no-repeat url(splash.png?v=14), 0px 0px / 1000000% 1000000% no-repeat url(splash.png?v=14) black";
-			document.body.appendChild(splash);
-			window.__eaglerExtraSplashMs = 6000;
-			window.__eaglerSplash2URL = "splash2.png?v=14";
-			window.__eaglerShowLoadingSplash = function(wrapper) {
-				var img = window.__eaglerSplash2URL || "splash2.png?v=14";
-				var earlySplash = wrapper.querySelector("._eaglercraftX_early_splash_element");
-				if (earlySplash && earlySplash.parentNode === wrapper) wrapper.removeChild(earlySplash);
-				var overlay = document.createElement("div");
-				overlay.className = "_eaglercraftX_loading_overlay";
-				overlay.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;z-index:100;pointer-events:none;image-rendering:pixelated;background:center / contain no-repeat url(\"" + img + "\"), 0px 0px / 1000000% 1000000% no-repeat url(\"" + img + "\") black";
-				var barHost = document.createElement("div");
-				barHost.className = "_eaglercraftX_loading_bar_host";
-				barHost.style.cssText = "position:absolute;left:50%;top:72%;transform:translateX(-50%);width:min(640px,88vw);pointer-events:none;";
-				var outer = document.createElement("div");
-				outer.style.cssText = "box-sizing:border-box;height:20px;padding:2px;border:2px solid #ffffff;background:transparent;";
-				var inner = document.createElement("div");
-				inner.style.cssText = "height:100%;width:0%;background:#ffffff;box-sizing:border-box;";
-				outer.appendChild(inner);
-				barHost.appendChild(outer);
-				overlay.appendChild(barHost);
-				wrapper.appendChild(overlay);
-				var start = performance.now();
-				var mojangSeen = false;
-				var titleStable = 0;
-				var dismissed = false;
-				function sampleGameScreen() {
-					var canvas = wrapper.querySelector("._eaglercraftX_canvas_element");
-					if (!canvas || canvas.width < 16 || canvas.height < 16) return null;
-					var gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-					if (!gl) return null;
-					var w = canvas.width, h = canvas.height, px = new Uint8Array(4);
-					var corners = [], centers = [];
-					var pts = [[0.06, 0.06], [0.94, 0.06], [0.06, 0.94], [0.94, 0.94], [0.5, 0.5], [0.5, 0.38]];
-					for (var i = 0; i < pts.length; i++) {
-						var x = Math.max(0, Math.min(w - 1, (pts[i][0] * w) | 0));
-						var y = Math.max(0, Math.min(h - 1, (pts[i][1] * h) | 0));
-						gl.readPixels(x, h - y - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-						var s = { r: px[0], g: px[1], b: px[2] };
-						if (i < 4) corners.push(s); else centers.push(s);
-					}
-					var cornerAvg = 0;
-					for (var j = 0; j < corners.length; j++) cornerAvg += (corners[j].r + corners[j].g + corners[j].b) / 3;
-					cornerAvg /= corners.length;
-					var whiteCorners = 0;
-					for (var k = 0; k < corners.length; k++) {
-						if (corners[k].r > 205 && corners[k].g > 205 && corners[k].b > 205) whiteCorners++;
-					}
-					var centerRed = false;
-					for (var m = 0; m < centers.length; m++) {
-						if (centers[m].r > 110 && centers[m].g < 95 && centers[m].b < 95) centerRed = true;
-					}
-					return {
-						cornerAvg: cornerAvg,
-						whiteCorners: whiteCorners,
-						centerRed: centerRed,
-						isMojang: whiteCorners >= 3 && cornerAvg > 215,
-						isTitle: whiteCorners <= 1 && cornerAvg < 155
-					};
-				}
-				function dismissOverlay() {
-					if (dismissed) return;
-					dismissed = true;
-					inner.style.width = "100%";
-					setTimeout(function() {
-						if (overlay.parentNode === wrapper) wrapper.removeChild(overlay);
-					}, 120);
-				}
-				function poll() {
-					if (dismissed) return;
-					var elapsed = performance.now() - start;
-					var barTarget = Math.min(0.92, elapsed / 12000);
-					inner.style.width = (barTarget * 100) + "%";
-					var sample = sampleGameScreen();
-					if (sample) {
-						if (sample.isMojang || (sample.whiteCorners >= 2 && sample.centerRed)) mojangSeen = true;
-						if (mojangSeen && sample.isTitle) {
-							titleStable++;
-							if (titleStable >= 4) {
-								dismissOverlay();
-								return;
-							}
-						} else if (mojangSeen && !sample.isMojang && sample.cornerAvg < 170) {
-							titleStable++;
-							if (titleStable >= 3) {
-								dismissOverlay();
-								return;
-							}
-						} else {
-							titleStable = 0;
-						}
-					}
-					if (elapsed > 90000) {
-						dismissOverlay();
-						return;
-					}
-					setTimeout(poll, 100);
-				}
-				poll();
-			};
+			if (typeof window.__eaglerShowLoadingSplash === "function") {
+				window.__eaglerShowLoadingSplash(null);
+			}
+			if (typeof window.__eaglerSetLoadingStatus === "function") {
+				window.__eaglerSetLoadingStatus("에셋 패키지 다운로드 중...");
+			}
 
 			var assetsEPK;
 			try {
